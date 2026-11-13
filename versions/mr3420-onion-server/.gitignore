@@ -1,0 +1,34 @@
+# Planificacion y auditoria (no versionar)
+PLAN.md
+AUDIT_REPORT.md
+
+# Firmware descargado
+firmware/*.bin
+*.bin
+
+# Configuracion real y secretos de despliegue
+config
+*.key
+*.pem
+.ssh_known_hosts
+
+# Claves, hostname y directorio del hidden service Tor
+**/hidden_service/
+**/hostname
+**/private_key
+
+# Artefactos de compilacion (si se agrega un servicio C en el futuro)
+*.o
+*.a
+*.so
+service/
+
+# Logs y temporales
+*.log
+log/
+*.tmp
+*.swp
+.DS_Store
+
+# Clave SSH del proyecto (privada)
+ssh/

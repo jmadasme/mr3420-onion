@@ -1,0 +1,35 @@
+# =============================================================================
+# torrc.example — Configuracion minima de Tor para el TL-MR3420 v5
+# =============================================================================
+# Destino en el router: /etc/tor/torrc (persistente en flash).
+# El init script de OpenWrt genera /tmp/torrc e incluye este archivo con
+# "%include", por lo que estas directivas se aplican al servicio.
+#
+# NO usar /var/lib/tor: /var es tmpfs y la direccion .onion cambiaria en cada
+# reinicio. El directorio debe estar en /etc (persistente).
+# =============================================================================
+
+# Directorio persistente del hidden service (clave privada + hostname)
+HiddenServiceDir /etc/tor/hidden_service
+
+# Servicio oculto version 3 (formato actual de la red Tor)
+HiddenServiceVersion 3
+
+# Publica el servicio local en onion:80 -> uhttpd en loopback:8080
+HiddenServicePort 80 127.0.0.1:8080
+
+# -----------------------------------------------------------------------------
+# Directivas opcionales (descomentar solo si se necesitan):
+#
+#   # No abrir un proxy SOCKS en este nodo dedicado a publicar el servicio.
+#   # Si se deja sin definir, Tor abre 127.0.0.1:9050 por defecto.
+#   SocksPort 0
+#
+#   # Logs al syslog de OpenWrt (visibles con: logread -e tor).
+#   # Util para diagnosticar el bootstrap; evitar niveles "debug" en 8 MB.
+#   Log notice syslog
+#
+# ADVERTENCIA: NUNCA configurar "SocksPort 0.0.0.0:9050" ni "SocksPort <IP_LAN>".
+# El proxy SOCKS debe quedar solo en loopback (o deshabilitado), jamas expuesto
+# a la LAN ni a la WAN.
+# -----------------------------------------------------------------------------
