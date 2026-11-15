@@ -12,8 +12,6 @@ Cada carpeta conserva el contenido original de su etapa, sin `.git`, dependencia
 instaladas ni binarios pesados. La documentación de operación y de código está en
 [`docs/`](docs/), y el sitio del proyecto en [`docs/index.html`](docs/index.html).
 
-> **Nota de preservación:** se removieron credenciales, claves o tokens detectados en 1 archivo(s) de esta familia. Los ejemplos y plantillas seguras se conservan.
-
 ## Índice de versiones
 
 | Versión | Qué aporta | Archivos |
@@ -35,6 +33,42 @@ ls scripts/
 
 Flashear un router puede dejarlo inutilizable. Los scripts asumen el modelo exacto y una conexión por Ethernet. No se incluyen claves ni firmware.
 
+<!-- ficha -->
+## Ficha de evaluación
+
+**Madurez global: 3.3/5**
+
+| Criterio | Nota | Evidencia |
+|---|---:|---|
+| Madurez | 2/5 | Siete scripts y flujo verificado hasta la dirección onion; el arranque estable quedó pendiente por RAM y almacenamiento. |
+| Reproducibilidad | 3/5 | Versión de OpenWrt, SHA256 y comandos están fijados; el resultado depende de un pendrive y del estado físico del router. |
+| Documentación | 4/5 | Bitácora por fases, datasheet, guía de desarrollador y script de reversión; falta un cierre con el servicio probado. |
+| Honestidad de límites | 5/5 | Registra el OOM, la desconexión del USB y el keypair SSH rechazado sin presentar el despliegue como terminado. |
+| Valor demostrativo | 4/5 | Muestra el ciclo completo de recuperación, flasheo, extroot y publicación onion sobre hardware muy limitado. |
+| Facilidad de despliegue | 2/5 | Exige recovery físico, cable Ethernet, pendrive y paciencia con un equipo de 64 MB de RAM. |
+
+Guía seria y bien instrumentada para publicar un onion desde un router viejo. El procedimiento llega hasta Tor, pero la estabilidad del equipo queda por resolver.
+
+## Lo que no funcionó
+
+### mr3420-onion-server — Tor no entraba en el overlay
+
+El overlay del MR3420 tiene 2,1 MB y Tor con sus dependencias pedía entre 2710 y 3030 KB. No se forzó opkg con --force-space: se agregaron módulos USB y se armó un extroot ext4 de 4 GB, con lo que Tor y ZeroTier quedaron instalados.
+
+### mr3420-onion-server — Puerto USB compartido con el LED de LAN 4
+
+El pendrive no se detectaba porque el puerto USB comparte GPIO con el LED del puerto LAN 4. Se aplicó swconfig sobre el puerto 4, se rehizo el bind de ehci y se creó /etc/init.d/usbpower para repetir la operación en cada arranque.
+
+### mr3420-onion-server — Tor terminado por falta de memoria
+
+Con 64 MB de RAM y sin swap, el bootstrap de Tor murió por OOM con un RSS de 16 MB. Quedó pendiente liberar memoria deteniendo uhttpd principal, rpcd y odhcpd, y limitar el consumo del proceso; esa corrección no se llegó a validar.
+
+### mr3420-onion-server — Pendrive desconectado y userspace colgado
+
+Una desconexión del pendrive dejó el router con el userspace inoperable. La clave onion se recuperó montando la partición en modo lectura desde la notebook, y la bitácora concluye que el extroot debe migrarse a un disco más confiable antes de retomar el despliegue.
+
+<!-- /ficha -->
+
 ## Documentación
 
 - [`docs/datasheet.md`](docs/datasheet.md) — instalación, operación y límites.
@@ -42,7 +76,7 @@ Flashear un router puede dejarlo inutilizable. Los scripts asumen el modelo exac
 - [`docs/REFERENCES.md`](docs/REFERENCES.md) — estándares, librerías y fuentes.
 - [`docs/index.html`](docs/index.html) — página del proyecto (GitHub Pages).
 
-## Alcance y honestidad
+## El proyecto en detalle
 
 
 ## Qué es este repositorio
